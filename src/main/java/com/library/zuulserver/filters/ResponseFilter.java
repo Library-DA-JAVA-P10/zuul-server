@@ -8,16 +8,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Enumeration;
+import javax.servlet.http.HttpServletResponse;
 
 @Component
-public class LogFilter extends ZuulFilter {
+public class ResponseFilter extends ZuulFilter {
 
     Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public String filterType() {
-        return "pre";
+        return "post";
     }
 
     @Override
@@ -32,17 +32,14 @@ public class LogFilter extends ZuulFilter {
 
     @Override
     public Object run() throws ZuulException {
-        HttpServletRequest req = RequestContext.getCurrentContext().getRequest();
 
-        log.info("**** Requête interceptée ! L'URL est : {} " , req.getRequestURL());
-        Enumeration<String> headerNames = req.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            String headerValue = req.getHeader(headerName);
-            System.out.print("Header Name: <em>" + headerName);
-            log.info("Header Name:  {}", headerName);
-            log.info("Header Value: {}", headerValue);
-        }
+        HttpServletResponse response = RequestContext.getCurrentContext().getResponse();
+
+
+        log.info(" CODE HTTP {} ", response.getStatus());
+        log.info(" HEADERS {} ", response.getHeaderNames().toString());
+
+
         return null;
     }
 }
